@@ -41,10 +41,10 @@ public:
     //    typedef DataType* Iterator;
     //    typedef const DataType* ConstIterator;
 
-    Iterator Begin() { return AllocatorType::Data(); }
-    Iterator End() { return AllocatorType::Data() + Size(); }
-    ConstIterator Begin() const { return AllocatorType::Data(); }
-    ConstIterator End() const { return AllocatorType::Data() + Size(); }
+    Iterator begin() { return AllocatorType::Data(); }  // Iterator should be "begin()" not "Begin()" to iterate with "for (auto val: vec)".
+    Iterator end() { return AllocatorType::Data() + Size(); }
+    ConstIterator begin() const { return AllocatorType::Data(); }
+    ConstIterator end() const { return AllocatorType::Data() + Size(); }
 
     // Constructors
     Vector()
@@ -113,248 +113,219 @@ public:
         VectorAssert(i < m_Size);
         return *AllocatorType::Data(i);
     }
+
+    Vector<SharedAllocator<DataType>> operator()(const Range& range) const
+    {
+        return Vector<SharedAllocator<DataType>>(const_cast<DataType*>(AllocatorType::Data(range.First())), range.Count(m_Size - 1));
+    }
+
+    Vector<SharedAllocator<DataType>> operator()(const Range& range)
+    {
+        return Vector<SharedAllocator<DataType>>(AllocatorType::Data(range.First()), range.Count(m_Size - 1));
+    }
+
+    VectorCommaAssignment<AllocatorType> operator=(const DataType& value)
+    {
+        if (m_Size > 0)
+        {
+            *AllocatorType::Data() = value;
+        }
+    
+        return VectorCommaAssignment<AllocatorType>(this, 1, value);
+    }
+
+    Vector& operator=(const Vector& other)
+    {
+        Resize(other.Size());
+        CopyVector(other);
+        return *this;
+    }
+
+    template <typename AllocaterType1>
+    Vector& operator=(const Vector<AllocaterType1>& other)
+    {
+        Resize(other.Size());
+        CopyVector(other);
+        return *this;
+    }
+
+    template <typename VectorType1, typename VectorType2, typename OprType>
+    Vector& operator=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
+    {
+        DataType* v3 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v3[i] = vov[i];
+        }
+
+        return *this;
+    }
+
+    Vector& operator+=(const DataType& v1)
+    {
+        DataType* v2 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v2[i] += v1;
+        }
+        return *this;
+    }
+
+    template <typename AllocatorType> 
+    Vector& operator+=(const Vector<AllocatorType>& other)
+    {
+        assert(m_Size == other.m_Size);
+        const DataType* v1 = other.Data();
+        DataType* v2 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v2[i] += v1[i];
+        }
+
+        return *this;
+    }
+
+    template <typename VectorType1, typename VectorType2, typename OprType>
+    Vector& operator+=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
+    {
+        DataType* v = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v[i] += vov[i];
+        }
+
+        return *this;
+    }
+
+    Vector& operator-=(const DataType& v1)
+    {
+        DataType* v2 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v2[i] -= v1;
+        }
+        return *this;
+    }
+
+    template <typename AllocatorType>
+    Vector& operator-=(const Vector<AllocatorType>& other)
+    {
+        assert(m_Size == other.m_Size);
+        const DataType* v1 = other.Data();
+        DataType* v2 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v2[i] -= v1[i];
+        }
+
+        return *this;
+    }
+
+    template <typename VectorType1, typename VectorType2, typename OprType>
+    Vector& operator-=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
+    {
+        DataType* v = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v[i] -= vov[i];
+        }
+
+        return *this;
+    }
+
+    Vector& operator*=(const DataType& v1)
+    {
+        DataType* v2 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v2[i] *= v1;
+        }
+        return *this;
+    }
+
+    template <typename AllocatorType>
+    Vector& operator*=(const Vector<AllocatorType>& other)
+    {
+        assert(m_Size == other.m_Size);
+        const DataType* v1 = other.Data();
+        DataType* v2 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v2[i] *= v1[i];
+        }
+
+        return *this;
+    }
+
+    template <typename VectorType1, typename VectorType2, typename OprType>
+    Vector& operator*=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
+    {
+        DataType* v = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v[i] *= vov[i];
+        }
+
+        return *this;
+    }
+
+    Vector& operator/=(const DataType& v1)
+    {
+        DataType* v2 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v2[i] /= v1;
+        }
+        return *this;
+    }
+
+    template <typename AllocatorType>
+    Vector& operator/=(const Vector<AllocatorType>& other)
+    {
+        assert(m_Size == other.m_Size);
+        const DataType* v1 = other.Data();
+        DataType* v2 = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v2[i] /= v1[i];
+        }
+
+        return *this;
+    }
+
+    template <typename VectorType1, typename VectorType2, typename OprType>
+    Vector& operator/=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
+    {
+        DataType* v = AllocatorType::Data();
+        for (int i = 0; i < m_Size; i++)
+        {
+            v[i] /= vov[i];
+        }
+
+        return *this;
+    }
+
+    // [y] = [A] * [x] using BLAS
+    //template <typename AllocatorType1, typename AllocatorType2>
+    //Vector& operator=(const MatMulVec<AllocatorType1, AllocatorType2>& mmv)
+    //{
+    //    resize(mmv._m.rows());
+    //    return BLAS::MxV(mmv._m, mmv._v, *this);
+    //}
+
+    //template <typename AllocatorType1, typename AllocatorType2>
+    //Vector& operator+=(const MatMulVec<AllocatorType1, AllocatorType2 >& mmv); // y+=A*x using BLAS
+    //template <typename AllocatorType1, typename AllocatorType2>
+    //Vector& operator-=(const MatMulVec<AllocatorType1, AllocatorType2 >& mmv); // y-=A*x using BLAS
+
+    //template <typename AllocatorType1, typename AllocatorType2>
+    //Vector& operator=(const CMatMulVec<AllocatorType1, AllocatorType2 >& mmv);  // y=A`*x  using BLAS
+    //template <typename AllocatorType1, typename AllocatorType2>
+    //Vector& operator+=(const CMatMulVec<AllocatorType1, AllocatorType2 >& mmv); // y+=A`*x using BLAS
+    //template <typename AllocatorType1, typename AllocatorType2>
+    //Vector& operator-=(const CMatMulVec<AllocatorType1, AllocatorType2 >& mmv); // y-=A`*x using BLAS
 };
 
 
-//
-//    //Vector<SharedAllocator<DataType>> operator()(const Range& range) const
-//    //{
-//    //    return Vector<SharedAllocator<DataType>>(const_cast<DataType*>(Data(range.First())), range.Count(m_Size - 1));
-//    //}
-//
-//    //Vector<SharedAllocator<DataType>> operator()(const Range& range)
-//    //{
-//    //    return Vector<SharedAllocator<DataType>>(const_cast<DataType*>(Data(range.First())), range.Count(m_Size - 1));
-//    //}
-//
-//    //VectorCommaAssignment<AllocatorType> operator=(const DataType& value)
-//    //{
-//    //    if (m_Size > 0)
-//    //    {
-//    //        *Data() = value;
-//    //    }
-//
-//    //    return VectorCommaAssignment<AllocatorType>(this, 1, value);
-//    //}
-//
-//    //Vector& operator=(const Vector& other)
-//    //{
-//    //    Resize(other.Size());
-//    //    CopyVector(other);
-//    //    return *this;
-//    //}
-//
-//    //template <typename AllocaterType1>
-//    //Vector& operator=(const Vector<AllocaterType1>& other);
-//    ////{
-//    ////    Resize(other.Size());
-//    ////    CopyVector(other);
-//    ////    return *this;
-//    ////}
-//
-//    //template <typename VectorType1, typename VectorType2, typename OprType>
-//    //Vector& operator=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov);
-//    ////{
-//    ////    DataType* v3 = Data();
-//    ////    for (int i = 0; i < m_Size; i++)
-//    ////    {
-//    ////        v3[i] = vov[i];
-//    ////    }
-//
-//    ////    return *this;
-//    ////}
-//
-//    //Vector& operator+=(const DataType& v1);
-//    ////{
-//    ////    DataType* v2 = Data();
-//    ////    for (int i = 0; i < m_Size; i++)
-//    ////    {
-//    ////        v2[i] += v1;
-//    ////    }
-//    ////    return *this;
-//    ////}
-//    //
-//    //template <typename AllocatorType> 
-//    //Vector& operator+=(const Vector<AllocatorType>& other)
-//    //{
-//    //    assert(m_Size == other.m_Size);
-//    //    const DataType* v1 = other.Data();
-//    //    DataType* v2 = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v2[i] += v1[i];
-//    //    }
-//
-//    //    return *this;
-//    //}
-//
-//    //template <typename VectorType1, typename VectorType2, typename OprType>
-//    //Vector& operator+=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
-//    //{
-//    //    DataType* v = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v[i] += vov[i];
-//    //    }
-//
-//    //    return *this;
-//    //}
-//
-//    //Vector& operator-=(const DataType& v1)
-//    //{
-//    //    DataType* v2 = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v2[i] -= v1;
-//    //    }
-//    //    return *this;
-//    //}
-//
-//    //template <typename AllocatorType>
-//    //Vector& operator-=(const Vector<AllocatorType>& other)
-//    //{
-//    //    assert(m_Size == other.m_Size);
-//    //    const DataType* v1 = other.Data();
-//    //    DataType* v2 = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v2[i] -= v1[i];
-//    //    }
-//
-//    //    return *this;
-//    //}
-//
-//    //template <typename VectorType1, typename VectorType2, typename OprType>
-//    //Vector& operator-=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
-//    //{
-//    //    DataType* v = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v[i] -= vov[i];
-//    //    }
-//
-//    //    return *this;
-//    //}
-//
-//    //Vector& operator*=(const DataType& v1)
-//    //{
-//    //    DataType* v2 = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v2[i] *= v1;
-//    //    }
-//    //    return *this;
-//    //}
-//
-//    //template <typename AllocatorType>
-//    //Vector& operator*=(const Vector<AllocatorType>& other)
-//    //{
-//    //    assert(m_Size == other.m_Size);
-//    //    const DataType* v1 = other.Data();
-//    //    DataType* v2 = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v2[i] *= v1[i];
-//    //    }
-//
-//    //    return *this;
-//    //}
-//
-//    //template <typename VectorType1, typename VectorType2, typename OprType>
-//    //Vector& operator*=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
-//    //{
-//    //    DataType* v = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v[i] *= vov[i];
-//    //    }
-//
-//    //    return *this;
-//    //}
-//
-//    //Vector& operator/=(const DataType& v1)
-//    //{
-//    //    DataType* v2 = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v2[i] /= v1;
-//    //    }
-//    //    return *this;
-//    //}
-//
-//    //template <typename AllocatorType>
-//    //Vector& operator/=(const Vector<AllocatorType>& other)
-//    //{
-//    //    assert(m_Size == other.m_Size);
-//    //    const DataType* v1 = other.Data();
-//    //    DataType* v2 = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v2[i] /= v1[i];
-//    //    }
-//
-//    //    return *this;
-//    //}
-//
-//    //template <typename VectorType1, typename VectorType2, typename OprType>
-//    //Vector& operator/=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
-//    //{
-//    //    DataType* v = Data();
-//    //    for (int i = 0; i < m_Size; i++)
-//    //    {
-//    //        v[i] /= vov[i];
-//    //    }
-//
-//    //    return *this;
-//    //}
-//};
 
 
-//template <typename AllocatorType>
-//template <typename AllocatorType1>
-//void Vector<AllocatorType>::CopyVector(const Vector<AllocatorType1>& src)
-//{
-//    const DataType* v1 = src.Data();
-//    DataType* v0 = Data();
-//
-//    for (int i = 0; i < m_Size; i++)
-//    {
-//        v0[i] = v1[i];
-//    }
-//}
-
-
-//template <typename AllocatorType>
-//template <typename AllocaterType1>
-//Vector<AllocatorType>& Vector<AllocatorType>::operator=(const Vector<AllocaterType1>& other)
-//{
-//    Resize(other.Size());
-//    CopyVector(other);
-//    return *this;
-//}
-//
-//
-//template <typename AllocatorType>
-//template <typename VectorType1, typename VectorType2, typename OprType>
-//Vector<AllocatorType>& Vector<AllocatorType>::operator=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
-//{
-//    DataType* v3 = Data();
-//    for (int i = 0; i < m_Size; i++)
-//    {
-//        v3[i] = vov[i];
-//    }
-//
-//    return *this;
-//}
-//
-//
-//template <typename AllocatorType>
-//Vector<AllocatorType>& Vector<AllocatorType>::operator+=(const DataType& v1)
-//{
-//    DataType* v2 = Data();
-//    for (int i = 0; i < m_Size; i++)
-//    {
-//        v2[i] += v1;
-//    }
-//    return *this;
-//}

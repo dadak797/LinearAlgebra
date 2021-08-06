@@ -4,6 +4,11 @@
 template<typename AllocatorType>
 class Vector;
 
+// For assigning values with comma(,)             
+// --- Example ---
+// Vector<DynamicAllocator<double>> vector(3);
+// vector = 1.0, 2.0, 3.0;
+
 template<typename AllocatorType>
 class VectorCommaAssignment
 {
@@ -30,7 +35,7 @@ public:
         }
     }
 
-    operator DataType() { return m_Value; }
+    operator DataType() { return m_Value; }  // Type Casting Operator Overloading
 
     VectorCommaAssignment operator,(DataType value)
     {
