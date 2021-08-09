@@ -1,9 +1,6 @@
 #pragma once
 #pragma warning (disable:4819)
 
-//#pragma comment(lib, "mkl_rt.lib")
-
-
 #include "mkl.h"
 #include <omp.h>
 
@@ -102,13 +99,36 @@ public:
         const DataType* A, int lda, DataType* B, int ldb);
 
     // Linear Equations LAPACK
-    // Computes the Bunch-Kaufman factorization of a symmetric matrix
+    // Computes the Bunch-Kaufman factorization of a symmetric matrix ([L][D][L]'-Decomposition)
     // [A] = [U] * [D] * [U]': uplo = 'U'
     // [A] = [L] * [D] * [L]': uplo = 'L'
+    // Diagonal values of [U] and [L] are 1 (Unitriangular matrix)
+    // [D] is diagonal with positive diagonal entries.
+    // Triangular part of [U] or [L] is overwritten in returned [A].
+    // Diagonal values of returned [A] are those of [D].
     // Supports Progress Function (mkl_progress)
     // ipiv: Array at least n-size. Contains details of the interchanges and the block structure of D.
     template<typename DataType>
     static int SYTRF(int matrix_layout, char uplo, int n, DataType* A, int lda, int* ipiv);
+
+    // Linear Equations LAPACK
+    // Solves a system of linear equations with a UDU'- or LDL'-factored 
+    // symmetric (Hermitian) coefficient matrix
+    // Solve [A][x] = [B]
+    // Important Node: SYTRF should be called before calling this function.
+    template<typename DataType>
+    static int SYTRS(int matrix_layout, char uplo, int n, int nrhs, const DataType* A, int lda, const int* ipiv, DataType* B, int ldb);
+
+    // Linear Equations LAPACK
+    // Computes the [L][U]-factorization of a general m by n matrix
+    // [A] = [P] * [L] * [U]
+    // [A] are overwritten by [L] and [U]
+    template<typename DataType>
+    static int GETRF(int matrix_layout, int m, int n, DataType* a, int lda, int* ipiv);
+
+    //template<typename DataType>
+    //static int GETRS()
+
 };
 
 
@@ -308,3 +328,42 @@ inline int BLASInterface::SYTRF(int matrix_layout, char uplo, int n, DataType* A
     assert(false);
     return -1;
 }
+
+template<>
+inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const float* A, int lda, const int* ipiv, float* B, int ldb)
+{
+    return LAPACKE_ssytrs(matrix_layout, uplo, n, nrhs, A, lda, ipiv, B, ldb);
+}
+
+template<>
+inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const double* A, int lda, const int* ipiv, double* B, int ldb)
+{
+    return LAPACKE_dsytrs(matrix_layout, uplo, n, nrhs, A, lda, ipiv, B, ldb);
+}
+
+template<typename DataType>
+inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const DataType* A, int lda, const int* ipiv, DataType* B, int ldb)
+{
+    assert(false);
+    return -1;
+}
+
+template<>
+inline int BLASInterface::GETRF(int matrix_layout, int m, int n, float* A, int lda, int* ipiv)
+{
+    return LAPACKE_sgetrf(matrix_layout, m, n, A, lda, ipiv);
+}
+
+template<>
+inline int BLASInterface::GETRF(int matrix_layout, int m, int n, double* A, int lda, int* ipiv)
+{
+    return LAPACKE_dgetrf(matrix_layout, m, n, A, lda, ipiv);
+}
+
+template<typename DataType>
+inline int BLASInterface::GETRF(int matrix_layout, int m, int n, DataType* A, int lda, int* ipiv)
+{
+    assert(false);
+    return -1;
+}
+

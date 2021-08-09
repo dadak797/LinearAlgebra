@@ -4,10 +4,12 @@
 template<typename AllocatorType>
 class Vector;
 
-// For assigning values with comma(,)             
+// For assigning values of a vector with comma(,)       
+//
 // --- Example ---
 // Vector<DynamicAllocator<double>> vector(3);
 // vector = 1.0, 2.0, 3.0;
+// ---------------
 
 template<typename AllocatorType>
 class VectorCommaAssignment
