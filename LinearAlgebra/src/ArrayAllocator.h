@@ -7,7 +7,7 @@
 #endif
 
 
-template <typename DataType>
+template<typename DataType>
 class DynamicAllocator
 {
 private:
@@ -47,8 +47,8 @@ protected:
         }
     }
 
-    // Why is this function needed?
-    //int GetID(int ID) const { return ID; }
+    // Get leading dimension
+    int GetLD(int ld) const { return ld; }
     
     template<typename MatrixType>
     void InitMatCopy(const MatrixType& src, MatrixType& dest)
@@ -74,7 +74,7 @@ public:
 };
 
 
-template <typename DataType, int N = 3>
+template<typename DataType, int N = 3>
 class StaticAllocator
 {
 private:
@@ -102,10 +102,10 @@ protected:
 
     void DeAllocate() {}
 
-    // Why is this function needed?
-    //int GetID(int ID) const { return ID; }
+    // Leading dimension
+    int GetLD(int ld) const { return ld; }
 
-    template <typename MatrixType>
+    template<typename MatrixType>
     void InitMatCopy(const MatrixType& src, MatrixType& dest)
     {
         dest = src;
@@ -129,7 +129,7 @@ public:
 };
 
 
-template <typename DataType>
+template<typename DataType>
 class SharedAllocator
 {
 private:
@@ -164,7 +164,7 @@ protected:
 
     void DeAllocate() {}
 
-    template <typename MatrixType>
+    template<typename MatrixType>
     void InitMatCopy(const MatrixType& src, MatrixType& dest) 
     {
         m_Data = src.m_Data;

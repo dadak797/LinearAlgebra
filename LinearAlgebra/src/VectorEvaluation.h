@@ -1,10 +1,10 @@
 #pragma once
 
 
-template <typename AllocatorType>
+template<typename AllocatorType>
 class Vector;
 
-template <typename MemberType>
+template<typename MemberType>
 class Scal2Vec 
 {
 public:
@@ -20,7 +20,7 @@ public:
     }
 };
 
-template <typename VectorType1, typename VectorType2, typename OprType>
+template<typename VectorType1, typename VectorType2, typename OprType>
 class Vec2Expr
 {
 private:
@@ -45,14 +45,14 @@ public:
 
 struct VecAdd 
 {
-    template <typename DataType> 
+    template<typename DataType> 
     static DataType Compute(const DataType& v1, const DataType& v2) 
     { 
         return v1 + v2; 
     }
 };
 
-template <typename VectorTypeR1, typename VectorTypeL1, typename OprType1, 
+template<typename VectorTypeR1, typename VectorTypeL1, typename OprType1, 
     typename VectorTypeR2, typename VectorTypeL2, typename OprType2>
 inline Vec2Expr<Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>, Vec2Expr<VectorTypeR2, VectorTypeL2, OprType2>, VecAdd> operator+(
     const Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>& v1, const Vec2Expr<VectorTypeR2, VectorTypeL2, OprType2>& v2)
@@ -60,35 +60,35 @@ inline Vec2Expr<Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>, Vec2Expr<VectorT
     return Vec2Expr<Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>, Vec2Expr<VectorTypeR2, VectorTypeL2, OprType2>, VecAdd>(v1, v2);
 }
 
-template <typename VectorTypeR1, typename VectorTypeL1, typename OprType1, typename AllocatorType>
+template<typename VectorTypeR1, typename VectorTypeL1, typename OprType1, typename AllocatorType>
 inline Vec2Expr<Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>, Vector<AllocatorType>, VecAdd> operator+(
     const Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>& v1, const Vector<AllocatorType>& v2)
 {
     return Vec2Expr<Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>, Vector<AllocatorType>, VecAdd>(v1, v2);
 }
 
-template <typename VectorTypeR1, typename VectorTypeL1, typename OprType1, typename AllocatorType>
+template<typename VectorTypeR1, typename VectorTypeL1, typename OprType1, typename AllocatorType>
 inline Vec2Expr<Vector<AllocatorType>, Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>, VecAdd> operator+(
     const Vector<AllocatorType>& v1, const Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>& v2)
 {
     return Vec2Expr<Vector<AllocatorType>, Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>, VecAdd>(v1, v2); 
 }
 
-template <typename AllocatorType1, typename AllocatorType2>
+template<typename AllocatorType1, typename AllocatorType2>
 inline Vec2Expr<Vector<AllocatorType1>, Vector<AllocatorType2>, VecAdd> operator+(
     const Vector<AllocatorType1>& v1, const Vector<AllocatorType2>& v2)
 {
     return Vec2Expr<Vector<AllocatorType1>, Vector<AllocatorType2>, VecAdd>(v1, v2); 
 }
 
-template <typename AllocatorType>
+template<typename AllocatorType>
 inline Vec2Expr<Scal2Vec<typename AllocatorType::MemberType>, Vector<AllocatorType>, VecAdd> operator+(
     const Scal2Vec<typename AllocatorType::MemberType>& v1, const Vector<AllocatorType>& v2)
 {
     return Vec2Expr<Scal2Vec<typename AllocatorType::member_type>, Vector<AllocatorType>, VecAdd>(v1, v2); 
 }
 
-template <typename VectorTypeR1, typename VectorTypeL1, typename OprType1>
+template<typename VectorTypeR1, typename VectorTypeL1, typename OprType1>
 inline Vec2Expr<Scal2Vec<typename VectorTypeR1::DataType>, Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>, VecAdd> operator+(
     const Scal2Vec<typename VectorTypeR1::DataType>& v1, const Vec2Expr<VectorTypeR1, VectorTypeL1, OprType1>& v2)
 {

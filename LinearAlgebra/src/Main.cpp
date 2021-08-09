@@ -2,26 +2,34 @@
 
 #include "Vector.h"
 #include <iostream>
+#include "BLASInterface.h"
 
 
 int main()
 {
-    Vector<DynamicAllocator<double>> vec(3);
+    Vector<DynamicAllocator<double>> matA(9);
 
-    vec = 1.0, 2.0, 3.0;
-    vec += 3.0f;
+    matA = 1.0, -1.0, 0.0
+         ,-1.0,  3.0,-2.0
+         , 0.0, -2.0, 3.0;
 
-    Vector<DynamicAllocator<double>> vec2(3);
+    int ipiv[3];
+    //int* ipiv;
 
-    vec2 = 5.0, 3.0, 1.0;
+    int res = BLASInterface::SYTRF(LAPACK_ROW_MAJOR, 'U', 3, matA.Data(), 3, ipiv);
 
-    Vector<DynamicAllocator<double>> vec3(3);
+    std::cout << "return value: " << res << std::endl;
+    std::cout << "ipiv: " << ipiv[0] << std::endl;
+    std::cout << "ipiv: " << ipiv[1] << std::endl;
+    std::cout << "ipiv: " << ipiv[2] << std::endl;
 
-    vec3 = vec + vec2;
-    
-    for (const auto& value: vec3)
+    for (int i = 0; i < 3; i++)
     {
-        std::cout << value << std::endl;
+        for (int j = 0; j < 3; j++)
+        {
+            std::cout << matA[i * 3 + j] << " ";
+        }
+        std::cout << std::endl;
     }
 
     return 0;

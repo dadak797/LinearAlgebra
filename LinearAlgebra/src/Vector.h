@@ -13,7 +13,7 @@
 #endif
 
 
-template <typename AllocatorType = DynamicAllocator<double>>
+template<typename AllocatorType = DynamicAllocator<double>>
 class Vector : public AllocatorType
 {
 public:
@@ -23,7 +23,7 @@ public:
 private:
     int m_Size;
 
-    template <typename AllocatorType1>
+    template<typename AllocatorType1>
     void CopyVector(const Vector<AllocatorType1>& src)
     {
         const DataType* v1 = src.Data();
@@ -141,7 +141,7 @@ public:
         return *this;
     }
 
-    template <typename AllocaterType1>
+    template<typename AllocaterType1>
     Vector& operator=(const Vector<AllocaterType1>& other)
     {
         Resize(other.Size());
@@ -149,7 +149,7 @@ public:
         return *this;
     }
 
-    template <typename VectorType1, typename VectorType2, typename OprType>
+    template<typename VectorType1, typename VectorType2, typename OprType>
     Vector& operator=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
     {
         DataType* v3 = AllocatorType::Data();
@@ -171,7 +171,7 @@ public:
         return *this;
     }
 
-    template <typename AllocatorType> 
+    template<typename AllocatorType> 
     Vector& operator+=(const Vector<AllocatorType>& other)
     {
         assert(m_Size == other.m_Size);
@@ -185,7 +185,7 @@ public:
         return *this;
     }
 
-    template <typename VectorType1, typename VectorType2, typename OprType>
+    template<typename VectorType1, typename VectorType2, typename OprType>
     Vector& operator+=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
     {
         DataType* v = AllocatorType::Data();
@@ -207,7 +207,7 @@ public:
         return *this;
     }
 
-    template <typename AllocatorType>
+    template<typename AllocatorType>
     Vector& operator-=(const Vector<AllocatorType>& other)
     {
         assert(m_Size == other.m_Size);
@@ -221,7 +221,7 @@ public:
         return *this;
     }
 
-    template <typename VectorType1, typename VectorType2, typename OprType>
+    template<typename VectorType1, typename VectorType2, typename OprType>
     Vector& operator-=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
     {
         DataType* v = AllocatorType::Data();
@@ -243,7 +243,7 @@ public:
         return *this;
     }
 
-    template <typename AllocatorType>
+    template<typename AllocatorType>
     Vector& operator*=(const Vector<AllocatorType>& other)
     {
         assert(m_Size == other.m_Size);
@@ -257,7 +257,7 @@ public:
         return *this;
     }
 
-    template <typename VectorType1, typename VectorType2, typename OprType>
+    template<typename VectorType1, typename VectorType2, typename OprType>
     Vector& operator*=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
     {
         DataType* v = AllocatorType::Data();
@@ -279,7 +279,7 @@ public:
         return *this;
     }
 
-    template <typename AllocatorType>
+    template<typename AllocatorType>
     Vector& operator/=(const Vector<AllocatorType>& other)
     {
         assert(m_Size == other.m_Size);
@@ -293,7 +293,7 @@ public:
         return *this;
     }
 
-    template <typename VectorType1, typename VectorType2, typename OprType>
+    template<typename VectorType1, typename VectorType2, typename OprType>
     Vector& operator/=(const Vec2Expr<VectorType1, VectorType2, OprType>& vov)
     {
         DataType* v = AllocatorType::Data();
