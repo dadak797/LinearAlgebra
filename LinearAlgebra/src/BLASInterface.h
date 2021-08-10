@@ -92,7 +92,7 @@ public:
     // Solves a system of linear equations with a Cholesky-factored 
     // symmetric (Hermitian) positive-definite coefficient matrix
     // Solve [A][x] = [B]
-    // nrhs: The number of right-hand sides. If [B] is a column vector, this value is 1.
+    // nrhs: The number of right-hand sides. The number of columns in [B]
     // Important Node: POTRF should be called before calling this function.
     template<typename DataType>
     static int POTRS(int matrix_layout, char uplo, int n, int nrhs, 
@@ -107,7 +107,7 @@ public:
     // Triangular part of [U] or [L] is overwritten in returned [A].
     // Diagonal values of returned [A] are those of [D].
     // Supports Progress Function (mkl_progress)
-    // ipiv: Array at least n-size. Contains details of the interchanges and the block structure of D.
+    // ipiv: Array at least n-size. Contains details of the interchanges and the block structure of D. Permutation Matrix
     template<typename DataType>
     static int SYTRF(int matrix_layout, char uplo, int n, DataType* A, int lda, int* ipiv);
 
@@ -123,12 +123,45 @@ public:
     // Computes the [L][U]-factorization of a general m by n matrix
     // [A] = [P] * [L] * [U]
     // [A] are overwritten by [L] and [U]
+    // For m < n, upper triangular of [A] is [U] and lower triangular of [A] is [L]. Diagonal terms of [L] are 1. [L] is m by m, [U] is m by n.
+    // For m > n, upper triangular of [A] is [U] and lower triangular of [A] is [L]. Diagonal terms of [L] are 1. [L] is m by n, [U] is n by n.
     template<typename DataType>
-    static int GETRF(int matrix_layout, int m, int n, DataType* a, int lda, int* ipiv);
+    static int GETRF(int matrix_layout, int m, int n, DataType* A, int lda, int* ipiv);
 
-    //template<typename DataType>
-    //static int GETRS()
+    // Linear Equations LAPACK
+    // Solves a system of linear equations with an [L][U]-factored square coefficient matrix, with multiple right-hand sides.
+    // trans { 'N', 'T', 'C' } : No transpose, Tranpose, Hermition transpose for complex number
+    // n: the order of [A]
+    // nrhs: The number of columns in [B]
+    // Important Node: GETRF should be called before calling this function.
+    template<typename DataType>
+    static int GETRS(int matrix_layout, char trans, int n, int nrhs, const DataType* A, int lda, const int* ipiv, DataType* B, int ldb);
 
+    // Linear Equations LAPACK
+    // Computes the inverse of an [L][U]-factored general matrix
+    // Important Node: GETRF should be called before calling this function.
+    template<typename DataType>
+    static int GETRI(int matrix_layout, int n, DataType* a, int lda, const int* ipiv);
+
+    // Least Squares and Eigenvalue Problems LAPACK
+    // Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
+    // jobz: 'N' is only for eigenvalues, 'V' is for eigenvalues and eigenvectors.
+    // uplo { 'U', 'L' }
+    // [A] returns orthonormal eigenvectors of input [A] for 'V'. If jobz is 'N', [A] stores lower or upper triangular values.
+    // [W] returns eigenvalues of [A] in ascending order
+    // 'LAPACK_ROW_MAJOR' stores eigenvectors in columns. 'LAPACK_COL_MAJOR' stores eigenvectors in rows.
+    template<typename DataType>
+    static int SYEV(int matrix_layout, char jobz, char uplo, int n, DataType* A, int lda, DataType* W);
+
+    // Least Squares and Eigenvalue Problems LAPACK
+    // Computes all eigenvalues and, optionally, eigenvectors of a real generalized symmetric definite eigenproblem.
+    // itype = 1 -> [A] * [X] = lambda * [B] * [X]
+    // itype = 2 -> [A] * [B] * [X] = lambda * [X]
+    // itype = 3 -> [B] * [A] * [X] = lambda * [X]
+
+    - Need to be tested!!!
+    template<typename DataType>
+    static int SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, DataType* A, int lda, DataType* B, int ldb, DataType* W);
 };
 
 
@@ -367,3 +400,78 @@ inline int BLASInterface::GETRF(int matrix_layout, int m, int n, DataType* A, in
     return -1;
 }
 
+template<>
+inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const float* A, int lda, const int* ipiv, float* B, int ldb)
+{
+    return LAPACKE_sgetrs(matrix_layout, trans, n, nrhs, A, lda, ipiv, B, ldb);
+}
+
+template<>
+inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const double* A, int lda, const int* ipiv, double* B, int ldb)
+{
+    return LAPACKE_dgetrs(matrix_layout, trans, n, nrhs, A, lda, ipiv, B, ldb);
+}
+
+template<typename DataType>
+inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const DataType* A, int lda, const int* ipiv, DataType* B, int ldb)
+{
+    assert(false);
+    return -1;
+}
+
+template<>
+inline int BLASInterface::GETRI(int matrix_layout, int n, float* a, int lda, const int* ipiv)
+{
+    return LAPACKE_sgetri(matrix_layout, n, a, lda, ipiv);
+}
+
+template<>
+inline int BLASInterface::GETRI(int matrix_layout, int n, double* a, int lda, const int* ipiv)
+{
+    return LAPACKE_dgetri(matrix_layout, n, a, lda, ipiv);
+}
+
+template<typename DataType>
+inline int BLASInterface::GETRI(int matrix_layout, int n, DataType* a, int lda, const int* ipiv)
+{
+    assert(false);
+    return -1;
+}
+
+template<>
+inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, float* A, int lda, float* W)
+{
+    return LAPACKE_ssyev(matrix_layout, jobz, uplo, n, A, lda, W);
+}
+
+template<>
+inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, double* A, int lda, double* W)
+{
+    return LAPACKE_dsyev(matrix_layout, jobz, uplo, n, A, lda, W);
+}
+
+template<typename DataType>
+inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, DataType* A, int lda, DataType* W)
+{
+    assert(false);
+    return -1;
+}
+
+template<>
+inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, float* A, int lda, float* B, int ldb, float* W)
+{
+    return LAPACKE_ssygv(matrix_layout, itype, jobz, uplo, n, A, lda, B, ldb, W);
+}
+
+template<>
+inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, double* A, int lda, double* B, int ldb, double* W)
+{
+    return LAPACKE_dsygv(matrix_layout, itype, jobz, uplo, n, A, lda, B, ldb, W);
+}
+
+template<typename DataType>
+inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, DataType* A, int lda, DataType* B, int ldb, DataType* W)
+{
+    assert(false);
+    return -1;
+}

@@ -9,17 +9,19 @@ int main()
 {
     Vector<DynamicAllocator<double>> matA(9);
 
-    matA = 1.0, -1.0, 0.0
-        , -1.0, 5.0, -4.0;
+    matA = 3.0, 1.0, 1.0
+        , 1.0, 2.0, 2.0
+        , 1.0, 2.0, 2.0;
 
-    int* ipiv = new int[10];
+    Vector<DynamicAllocator<double>> vecW(3);
 
-    int res = BLASInterface::GETRF(LAPACK_ROW_MAJOR, 2, 3, matA.Data(), 3, ipiv);
+    vecW = 0.0, 0.0, 0.0;
 
-    std::cout << "return value: " << res << std::endl;
-    for (int i = 0; i < 10; i++)
-        std::cout << "ipiv: " << ipiv[i] << std::endl;
-    
+    int res = BLASInterface::SYEV(LAPACK_ROW_MAJOR, 'V', 'L', 3, matA.Data(), 3, vecW.Data());
+
+    std::cout << "Return: " << res << std::endl;
+
+   
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
@@ -29,15 +31,11 @@ int main()
         std::cout << std::endl;
     }
 
-    //Vector<DynamicAllocator<double>> matB(3);
-    //matB = -2.0, -6.0, 38.0;
+    //for (const auto& value : matA)
+      //  std::cout << value << std::endl;
 
-    //res = BLASInterface::SYTRS(LAPACK_ROW_MAJOR, 'L', 3, 1, matA.Data(), 3, ipiv, matB.Data(), 1);
-
-    //for (const auto& value : matB)
-    //    std::cout << value << std::endl;
-
-    delete ipiv;
+    for (const auto& value : vecW)
+        std::cout << value << std::endl;
 
     return 0;
 }
