@@ -7,26 +7,27 @@
 
 int main()
 {
-    Vector<DynamicAllocator<double>> matA(9);
+    Vector<DynamicAllocator<double>> matK(4);
 
-    matA = 3.0, 1.0, 1.0
-        , 1.0, 2.0, 2.0
-        , 1.0, 2.0, 2.0;
+    matK = 6.0, -3.0
+         ,-3.0,  6.0;
 
-    Vector<DynamicAllocator<double>> vecW(3);
+    Vector<DynamicAllocator<double>> matM(4);
 
-    vecW = 0.0, 0.0, 0.0;
+    matM = 3.0, 0.0
+         , 0.0, 3.0;
 
-    int res = BLASInterface::SYEV(LAPACK_ROW_MAJOR, 'V', 'L', 3, matA.Data(), 3, vecW.Data());
+    Vector<DynamicAllocator<double>> vecW(2);
+ 
+    int res = BLASInterface::SYGV(LAPACK_ROW_MAJOR, 1, 'V', 'L', 2, matK.Data(), 2, matM.Data(), 2, vecW.Data());
 
     std::cout << "Return: " << res << std::endl;
-
-   
-    for (int i = 0; i < 3; i++)
+       
+    for (int i = 0; i < 2; i++)
     {
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < 2; j++)
         {
-            std::cout << matA[i * 3 + j] << " ";
+            std::cout << matK[i * 2 + j] << " ";
         }
         std::cout << std::endl;
     }

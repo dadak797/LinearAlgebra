@@ -158,8 +158,8 @@ public:
     // itype = 1 -> [A] * [X] = lambda * [B] * [X]
     // itype = 2 -> [A] * [B] * [X] = lambda * [X]
     // itype = 3 -> [B] * [A] * [X] = lambda * [X]
-
-    - Need to be tested!!!
+    // For itype = 1 and 2, [A] returns eigenvectors, which are normalized as [X]'*[B]*[X] = [I]
+    // For itype = 3, [A] are normalized as [X]'*inv([B])*[X] = [I]
     template<typename DataType>
     static int SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, DataType* A, int lda, DataType* B, int ldb, DataType* W);
 };
