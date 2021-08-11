@@ -161,6 +161,9 @@
     <ClInclude Include="src\ArrayAllocator.h" />
     <ClInclude Include="src\BLASInterface.h" />
     <ClInclude Include="src\GPUBLASInterface.h" />
+    <ClInclude Include="src\Matrix.h" />
+    <ClInclude Include="src\MatrixCommaAssignment.h" />
+    <ClInclude Include="src\MatrixEvaluation.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Range.h" />
     <ClInclude Include="src\Vector.h" />

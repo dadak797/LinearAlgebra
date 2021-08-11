@@ -50,5 +50,14 @@
     <ClInclude Include="src\GPUBLASInterface.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="src\Matrix.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MatrixCommaAssignment.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MatrixEvaluation.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

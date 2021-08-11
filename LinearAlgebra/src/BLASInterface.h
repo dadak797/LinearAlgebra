@@ -41,11 +41,11 @@ public:
     // [A]: m by n
     // CBLAS_LAYOUT { CblasRowMajor, CblasColMajor }
     // CBLAS_TRANSPOSE { CblasNoTrans, CblasTrans, CblasConjTrans }
-    // lda: Leading dimension of [A]. Row-Major n, Column-Major m
+    // ldA: Leading dimension of [A]. Row-Major n, Column-Major m
     // k: Row-Major m, Column-Major n
     template<typename DataType>
     static void GEMV(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE transA, const int m, const int n,
-        const DataType alpha, const DataType* A, const int lda, const DataType* x, const int incx,
+        const DataType alpha, const DataType* A, const int ldA, const DataType* x, const int incx,
         const DataType beta, DataType* y, const int incy);
     
     // BLAS Level 3
@@ -53,13 +53,13 @@ public:
     // op([A]): m by k. [A], [A]', conjugate([A]')
     // op([B]): k by n. [B], [B]', conjugate([B]')
     // [C]: m by n.
-    // lda: Leading dimension of [A].
-    // ldb: Leading dimension of [B].
-    // ldc: Leading demension of [C].
+    // ldA: Leading dimension of [A].
+    // ldB: Leading dimension of [B].
+    // ldC: Leading demension of [C].
     template<typename DataType>
     static void GEMM(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE transA, const CBLAS_TRANSPOSE transB, 
-        const int m, const int n, const int k, const DataType alpha, const DataType* A, const int lda, 
-        const DataType* B, const int ldb, const DataType beta, DataType* C, const int ldc);
+        const int m, const int n, const int k, const DataType alpha, const DataType* A, const int ldA, 
+        const DataType* B, const int ldB, const DataType beta, DataType* C, const int ldC);
 
     // BLAS Level 3
     // op([A]) * [X] = alpha * [B]: CBLAS_SIDE = CblasLeft
@@ -73,7 +73,7 @@ public:
     template<typename DataType>
     static void TRSM(const CBLAS_LAYOUT layout, const CBLAS_SIDE side, const CBLAS_UPLO uplo, 
         const CBLAS_TRANSPOSE transA, const CBLAS_DIAG diag, const int m, const int n, 
-        const DataType alpha, const DataType* A, const int lda, DataType* B, const int ldb);
+        const DataType alpha, const DataType* A, const int ldA, DataType* B, const int ldB);
 
     // Linear Equations LAPACK
     // Computes the Cholesky factorization of a symmetric (Hermitian) positive-definite matrix
@@ -86,7 +86,7 @@ public:
     // For upper case, lower parts should be filled with zero after calculation.
     // For lower case, upper parts should be filled with zero after calculation. 
     template<typename DataType>
-    static int POTRF(int matrix_layout, char uplo, int n, DataType* A, int lda);
+    static int POTRF(int matrix_layout, char uplo, int n, DataType* A, int ldA);
 
     // Linear Equations LAPACK
     // Solves a system of linear equations with a Cholesky-factored 
@@ -96,7 +96,7 @@ public:
     // Important Node: POTRF should be called before calling this function.
     template<typename DataType>
     static int POTRS(int matrix_layout, char uplo, int n, int nrhs, 
-        const DataType* A, int lda, DataType* B, int ldb);
+        const DataType* A, int ldA, DataType* B, int ldB);
 
     // Linear Equations LAPACK
     // Computes the Bunch-Kaufman factorization of a symmetric matrix ([L][D][L]'-Decomposition)
@@ -109,7 +109,7 @@ public:
     // Supports Progress Function (mkl_progress)
     // ipiv: Array at least n-size. Contains details of the interchanges and the block structure of D. Permutation Matrix
     template<typename DataType>
-    static int SYTRF(int matrix_layout, char uplo, int n, DataType* A, int lda, int* ipiv);
+    static int SYTRF(int matrix_layout, char uplo, int n, DataType* A, int ldA, int* ipiv);
 
     // Linear Equations LAPACK
     // Solves a system of linear equations with a UDU'- or LDL'-factored 
@@ -117,7 +117,7 @@ public:
     // Solve [A][x] = [B]
     // Important Node: SYTRF should be called before calling this function.
     template<typename DataType>
-    static int SYTRS(int matrix_layout, char uplo, int n, int nrhs, const DataType* A, int lda, const int* ipiv, DataType* B, int ldb);
+    static int SYTRS(int matrix_layout, char uplo, int n, int nrhs, const DataType* A, int ldA, const int* ipiv, DataType* B, int ldB);
 
     // Linear Equations LAPACK
     // Computes the [L][U]-factorization of a general m by n matrix
@@ -126,7 +126,7 @@ public:
     // For m < n, upper triangular of [A] is [U] and lower triangular of [A] is [L]. Diagonal terms of [L] are 1. [L] is m by m, [U] is m by n.
     // For m > n, upper triangular of [A] is [U] and lower triangular of [A] is [L]. Diagonal terms of [L] are 1. [L] is m by n, [U] is n by n.
     template<typename DataType>
-    static int GETRF(int matrix_layout, int m, int n, DataType* A, int lda, int* ipiv);
+    static int GETRF(int matrix_layout, int m, int n, DataType* A, int ldA, int* ipiv);
 
     // Linear Equations LAPACK
     // Solves a system of linear equations with an [L][U]-factored square coefficient matrix, with multiple right-hand sides.
@@ -135,13 +135,13 @@ public:
     // nrhs: The number of columns in [B]
     // Important Node: GETRF should be called before calling this function.
     template<typename DataType>
-    static int GETRS(int matrix_layout, char trans, int n, int nrhs, const DataType* A, int lda, const int* ipiv, DataType* B, int ldb);
+    static int GETRS(int matrix_layout, char trans, int n, int nrhs, const DataType* A, int ldA, const int* ipiv, DataType* B, int ldB);
 
     // Linear Equations LAPACK
     // Computes the inverse of an [L][U]-factored general matrix
     // Important Node: GETRF should be called before calling this function.
     template<typename DataType>
-    static int GETRI(int matrix_layout, int n, DataType* a, int lda, const int* ipiv);
+    static int GETRI(int matrix_layout, int n, DataType* a, int ldA, const int* ipiv);
 
     // Least Squares and Eigenvalue Problems LAPACK
     // Computes all eigenvalues and, optionally, eigenvectors of a real symmetric matrix.
@@ -151,7 +151,7 @@ public:
     // [W] returns eigenvalues of [A] in ascending order
     // 'LAPACK_ROW_MAJOR' stores eigenvectors in columns. 'LAPACK_COL_MAJOR' stores eigenvectors in rows.
     template<typename DataType>
-    static int SYEV(int matrix_layout, char jobz, char uplo, int n, DataType* A, int lda, DataType* W);
+    static int SYEV(int matrix_layout, char jobz, char uplo, int n, DataType* A, int ldA, DataType* W);
 
     // Least Squares and Eigenvalue Problems LAPACK
     // Computes all eigenvalues and, optionally, eigenvectors of a real generalized symmetric definite eigenproblem.
@@ -161,7 +161,7 @@ public:
     // For itype = 1 and 2, [A] returns eigenvectors, which are normalized as [X]'*[B]*[X] = [I]
     // For itype = 3, [A] are normalized as [X]'*inv([B])*[X] = [I]
     template<typename DataType>
-    static int SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, DataType* A, int lda, DataType* B, int ldb, DataType* W);
+    static int SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, DataType* A, int ldA, DataType* B, int ldB, DataType* W);
 };
 
 
@@ -232,23 +232,23 @@ inline void BLASInterface::AXPY(const int n, const DataType alpha,
 
 template<>
 inline void BLASInterface::GEMV(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE transA, const int m, const int n,
-    const float alpha, const float* A, const int lda, const float* x, const int incx,
+    const float alpha, const float* A, const int ldA, const float* x, const int incx,
     const float beta, float* y, const int incy)
 {
-    cblas_sgemv(layout, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
+    cblas_sgemv(layout, transA, m, n, alpha, A, ldA, x, incx, beta, y, incy);
 }
 
 template<>
 inline void BLASInterface::GEMV(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE transA, const int m, const int n,
-    const double alpha, const double* A, const int lda, const double* x, const int incx,
+    const double alpha, const double* A, const int ldA, const double* x, const int incx,
     const double beta, double* y, const int incy)
 {
-    cblas_dgemv(layout, transA, m, n, alpha, A, lda, x, incx, beta, y, incy);
+    cblas_dgemv(layout, transA, m, n, alpha, A, ldA, x, incx, beta, y, incy);
 }
 
 template<typename DataType>
 inline void BLASInterface::GEMV(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE transA, const int m, const int n,
-    const DataType alpha, const DataType* A, const int lda, const DataType* x, const int incx,
+    const DataType alpha, const DataType* A, const int ldA, const DataType* x, const int incx,
     const DataType beta, DataType* y, const int incy)
 {
     assert(false);
@@ -256,24 +256,24 @@ inline void BLASInterface::GEMV(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE
 
 template<>
 inline void BLASInterface::GEMM(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE transA, const CBLAS_TRANSPOSE transB,
-    const int m, const int n, const int k, const float alpha, const float* A, const int lda,
-    const float* B, const int ldb, const float beta, float* C, const int ldc)
+    const int m, const int n, const int k, const float alpha, const float* A, const int ldA,
+    const float* B, const int ldB, const float beta, float* C, const int ldC)
 {
-    cblas_sgemm(layout, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+    cblas_sgemm(layout, transA, transB, m, n, k, alpha, A, ldA, B, ldB, beta, C, ldC);
 }
 
 template<>
 inline void BLASInterface::GEMM(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE transA, const CBLAS_TRANSPOSE transB,
-    const int m, const int n, const int k, const double alpha, const double* A, const int lda,
-    const double* B, const int ldb, const double beta, double* C, const int ldc)
+    const int m, const int n, const int k, const double alpha, const double* A, const int ldA,
+    const double* B, const int ldB, const double beta, double* C, const int ldC)
 {
-    cblas_dgemm(layout, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+    cblas_dgemm(layout, transA, transB, m, n, k, alpha, A, ldA, B, ldB, beta, C, ldC);
 }
 
 template<typename DataType>
 inline void BLASInterface::GEMM(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE transA, const CBLAS_TRANSPOSE transB,
-    const int m, const int n, const int k, const DataType alpha, const DataType* A, const int lda,
-    const DataType* B, const int ldb, const DataType beta, DataType* C, const int ldc)
+    const int m, const int n, const int k, const DataType alpha, const DataType* A, const int ldA,
+    const DataType* B, const int ldB, const DataType beta, DataType* C, const int ldC)
 {
     assert(false);
 }
@@ -281,41 +281,41 @@ inline void BLASInterface::GEMM(const CBLAS_LAYOUT layout, const CBLAS_TRANSPOSE
 template<>
 inline void BLASInterface::TRSM(const CBLAS_LAYOUT layout, const CBLAS_SIDE side, const CBLAS_UPLO uplo,
     const CBLAS_TRANSPOSE transA, const CBLAS_DIAG diag, const int m, const int n,
-    const float alpha, const float* A, const int lda, float* B, const int ldb)
+    const float alpha, const float* A, const int ldA, float* B, const int ldB)
 {
-    cblas_strsm(layout, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
+    cblas_strsm(layout, side, uplo, transA, diag, m, n, alpha, A, ldA, B, ldB);
 }
 
 template<>
 inline void BLASInterface::TRSM(const CBLAS_LAYOUT layout, const CBLAS_SIDE side, const CBLAS_UPLO uplo,
     const CBLAS_TRANSPOSE transA, const CBLAS_DIAG diag, const int m, const int n,
-    const double alpha, const double* A, const int lda, double* B, const int ldb)
+    const double alpha, const double* A, const int ldA, double* B, const int ldB)
 {
-    cblas_dtrsm(layout, side, uplo, transA, diag, m, n, alpha, A, lda, B, ldb);
+    cblas_dtrsm(layout, side, uplo, transA, diag, m, n, alpha, A, ldA, B, ldB);
 }
 
 template<typename DataType>
 inline void BLASInterface::TRSM(const CBLAS_LAYOUT layout, const CBLAS_SIDE side, const CBLAS_UPLO uplo,
     const CBLAS_TRANSPOSE transA, const CBLAS_DIAG diag, const int m, const int n,
-    const DataType alpha, const DataType* A, const int lda, DataType* B, const int ldb)
+    const DataType alpha, const DataType* A, const int ldA, DataType* B, const int ldB)
 {
     assert(false);
 }
 
 template<>
-inline int BLASInterface::POTRF(int matrix_layout, char uplo, int n, float* A, int lda)
+inline int BLASInterface::POTRF(int matrix_layout, char uplo, int n, float* A, int ldA)
 {
-    return LAPACKE_spotrf(matrix_layout, uplo, n, A, lda);
+    return LAPACKE_spotrf(matrix_layout, uplo, n, A, ldA);
 }
 
 template<>
-inline int BLASInterface::POTRF(int matrix_layout, char uplo, int n, double* A, int lda)
+inline int BLASInterface::POTRF(int matrix_layout, char uplo, int n, double* A, int ldA)
 {
-    return LAPACKE_dpotrf(matrix_layout, uplo, n, A, lda);
+    return LAPACKE_dpotrf(matrix_layout, uplo, n, A, ldA);
 }
 
 template<typename DataType>
-inline int BLASInterface::POTRF(int matrix_layout, char uplo, int n, DataType* A, int lda)
+inline int BLASInterface::POTRF(int matrix_layout, char uplo, int n, DataType* A, int ldA)
 {
     assert(false);
     return -1;
@@ -323,154 +323,154 @@ inline int BLASInterface::POTRF(int matrix_layout, char uplo, int n, DataType* A
 
 template<>
 inline int BLASInterface::POTRS(int matrix_layout, char uplo, int n, int nrhs,
-    const float* A, int lda, float* B, int ldb)
+    const float* A, int ldA, float* B, int ldB)
 {
-    return LAPACKE_spotrs(matrix_layout, uplo, n, nrhs, A, lda, B, ldb);
+    return LAPACKE_spotrs(matrix_layout, uplo, n, nrhs, A, ldA, B, ldB);
 }
 
 template<>
 inline int BLASInterface::POTRS(int matrix_layout, char uplo, int n, int nrhs,
-    const double* A, int lda, double* B, int ldb)
+    const double* A, int ldA, double* B, int ldB)
 {
-    return LAPACKE_dpotrs(matrix_layout, uplo, n, nrhs, A, lda, B, ldb);
+    return LAPACKE_dpotrs(matrix_layout, uplo, n, nrhs, A, ldA, B, ldB);
 }
 
 template<typename DataType>
 inline int BLASInterface::POTRS(int matrix_layout, char uplo, int n, int nrhs,
-    const DataType* A, int lda, DataType* B, int ldb)
+    const DataType* A, int ldA, DataType* B, int ldB)
 {
     assert(false);
     return -1;
 }
 
 template<>
-inline int BLASInterface::SYTRF(int matrix_layout, char uplo, int n, float* A, int lda, int* ipiv)
+inline int BLASInterface::SYTRF(int matrix_layout, char uplo, int n, float* A, int ldA, int* ipiv)
 {
-    return LAPACKE_ssytrf(matrix_layout, uplo, n, A, lda, ipiv);
+    return LAPACKE_ssytrf(matrix_layout, uplo, n, A, ldA, ipiv);
 }
 
 template<>
-inline int BLASInterface::SYTRF(int matrix_layout, char uplo, int n, double* A, int lda, int* ipiv)
+inline int BLASInterface::SYTRF(int matrix_layout, char uplo, int n, double* A, int ldA, int* ipiv)
 {
-    return LAPACKE_dsytrf(matrix_layout, uplo, n, A, lda, ipiv);
+    return LAPACKE_dsytrf(matrix_layout, uplo, n, A, ldA, ipiv);
 }
 
 template<typename DataType>
-inline int BLASInterface::SYTRF(int matrix_layout, char uplo, int n, DataType* A, int lda, int* ipiv)
+inline int BLASInterface::SYTRF(int matrix_layout, char uplo, int n, DataType* A, int ldA, int* ipiv)
 {
     assert(false);
     return -1;
 }
 
 template<>
-inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const float* A, int lda, const int* ipiv, float* B, int ldb)
+inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const float* A, int ldA, const int* ipiv, float* B, int ldB)
 {
-    return LAPACKE_ssytrs(matrix_layout, uplo, n, nrhs, A, lda, ipiv, B, ldb);
+    return LAPACKE_ssytrs(matrix_layout, uplo, n, nrhs, A, ldA, ipiv, B, ldB);
 }
 
 template<>
-inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const double* A, int lda, const int* ipiv, double* B, int ldb)
+inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const double* A, int ldA, const int* ipiv, double* B, int ldB)
 {
-    return LAPACKE_dsytrs(matrix_layout, uplo, n, nrhs, A, lda, ipiv, B, ldb);
+    return LAPACKE_dsytrs(matrix_layout, uplo, n, nrhs, A, ldA, ipiv, B, ldB);
 }
 
 template<typename DataType>
-inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const DataType* A, int lda, const int* ipiv, DataType* B, int ldb)
+inline int BLASInterface::SYTRS(int matrix_layout, char uplo, int n, int nrhs, const DataType* A, int ldA, const int* ipiv, DataType* B, int ldB)
 {
     assert(false);
     return -1;
 }
 
 template<>
-inline int BLASInterface::GETRF(int matrix_layout, int m, int n, float* A, int lda, int* ipiv)
+inline int BLASInterface::GETRF(int matrix_layout, int m, int n, float* A, int ldA, int* ipiv)
 {
-    return LAPACKE_sgetrf(matrix_layout, m, n, A, lda, ipiv);
+    return LAPACKE_sgetrf(matrix_layout, m, n, A, ldA, ipiv);
 }
 
 template<>
-inline int BLASInterface::GETRF(int matrix_layout, int m, int n, double* A, int lda, int* ipiv)
+inline int BLASInterface::GETRF(int matrix_layout, int m, int n, double* A, int ldA, int* ipiv)
 {
-    return LAPACKE_dgetrf(matrix_layout, m, n, A, lda, ipiv);
+    return LAPACKE_dgetrf(matrix_layout, m, n, A, ldA, ipiv);
 }
 
 template<typename DataType>
-inline int BLASInterface::GETRF(int matrix_layout, int m, int n, DataType* A, int lda, int* ipiv)
+inline int BLASInterface::GETRF(int matrix_layout, int m, int n, DataType* A, int ldA, int* ipiv)
 {
     assert(false);
     return -1;
 }
 
 template<>
-inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const float* A, int lda, const int* ipiv, float* B, int ldb)
+inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const float* A, int ldA, const int* ipiv, float* B, int ldB)
 {
-    return LAPACKE_sgetrs(matrix_layout, trans, n, nrhs, A, lda, ipiv, B, ldb);
+    return LAPACKE_sgetrs(matrix_layout, trans, n, nrhs, A, ldA, ipiv, B, ldB);
 }
 
 template<>
-inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const double* A, int lda, const int* ipiv, double* B, int ldb)
+inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const double* A, int ldA, const int* ipiv, double* B, int ldB)
 {
-    return LAPACKE_dgetrs(matrix_layout, trans, n, nrhs, A, lda, ipiv, B, ldb);
+    return LAPACKE_dgetrs(matrix_layout, trans, n, nrhs, A, ldA, ipiv, B, ldB);
 }
 
 template<typename DataType>
-inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const DataType* A, int lda, const int* ipiv, DataType* B, int ldb)
+inline int BLASInterface::GETRS(int matrix_layout, char trans, int n, int nrhs, const DataType* A, int ldA, const int* ipiv, DataType* B, int ldB)
 {
     assert(false);
     return -1;
 }
 
 template<>
-inline int BLASInterface::GETRI(int matrix_layout, int n, float* a, int lda, const int* ipiv)
+inline int BLASInterface::GETRI(int matrix_layout, int n, float* a, int ldA, const int* ipiv)
 {
-    return LAPACKE_sgetri(matrix_layout, n, a, lda, ipiv);
+    return LAPACKE_sgetri(matrix_layout, n, a, ldA, ipiv);
 }
 
 template<>
-inline int BLASInterface::GETRI(int matrix_layout, int n, double* a, int lda, const int* ipiv)
+inline int BLASInterface::GETRI(int matrix_layout, int n, double* a, int ldA, const int* ipiv)
 {
-    return LAPACKE_dgetri(matrix_layout, n, a, lda, ipiv);
+    return LAPACKE_dgetri(matrix_layout, n, a, ldA, ipiv);
 }
 
 template<typename DataType>
-inline int BLASInterface::GETRI(int matrix_layout, int n, DataType* a, int lda, const int* ipiv)
+inline int BLASInterface::GETRI(int matrix_layout, int n, DataType* a, int ldA, const int* ipiv)
 {
     assert(false);
     return -1;
 }
 
 template<>
-inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, float* A, int lda, float* W)
+inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, float* A, int ldA, float* W)
 {
-    return LAPACKE_ssyev(matrix_layout, jobz, uplo, n, A, lda, W);
+    return LAPACKE_ssyev(matrix_layout, jobz, uplo, n, A, ldA, W);
 }
 
 template<>
-inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, double* A, int lda, double* W)
+inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, double* A, int ldA, double* W)
 {
-    return LAPACKE_dsyev(matrix_layout, jobz, uplo, n, A, lda, W);
+    return LAPACKE_dsyev(matrix_layout, jobz, uplo, n, A, ldA, W);
 }
 
 template<typename DataType>
-inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, DataType* A, int lda, DataType* W)
+inline int BLASInterface::SYEV(int matrix_layout, char jobz, char uplo, int n, DataType* A, int ldA, DataType* W)
 {
     assert(false);
     return -1;
 }
 
 template<>
-inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, float* A, int lda, float* B, int ldb, float* W)
+inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, float* A, int ldA, float* B, int ldB, float* W)
 {
-    return LAPACKE_ssygv(matrix_layout, itype, jobz, uplo, n, A, lda, B, ldb, W);
+    return LAPACKE_ssygv(matrix_layout, itype, jobz, uplo, n, A, ldA, B, ldB, W);
 }
 
 template<>
-inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, double* A, int lda, double* B, int ldb, double* W)
+inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, double* A, int ldA, double* B, int ldB, double* W)
 {
-    return LAPACKE_dsygv(matrix_layout, itype, jobz, uplo, n, A, lda, B, ldb, W);
+    return LAPACKE_dsygv(matrix_layout, itype, jobz, uplo, n, A, ldA, B, ldB, W);
 }
 
 template<typename DataType>
-inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, DataType* A, int lda, DataType* B, int ldb, DataType* W)
+inline int BLASInterface::SYGV(int matrix_layout, int itype, char jobz, char uplo, int n, DataType* A, int ldA, DataType* B, int ldB, DataType* W)
 {
     assert(false);
     return -1;

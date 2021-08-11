@@ -22,11 +22,11 @@ protected:
         Allocate(size); 
     }
 
-    //DynamicAllocator(DataType* data, int ID) 
+    //DynamicAllocator(DataType* data, int ld) 
     //{ 
     //    assert(false); 
     //}
-    DynamicAllocator(DataType* data, int ID) = delete;
+    DynamicAllocator(DataType* data, int ld) = delete;
 
     void Swap(DynamicAllocator& other)
     {
@@ -47,8 +47,8 @@ protected:
         }
     }
 
-    // Get leading dimension
-    int GetLD(int ld) const { return ld; }
+    // Get Leading Dimension
+    //int GetLD(int ld) const { return ld; }
     
     template<typename MatrixType>
     void InitMatCopy(const MatrixType& src, MatrixType& dest)
@@ -83,27 +83,31 @@ private:
 protected:
     StaticAllocator() {}
 
-    StaticAllocator(int size) 
-    { 
-        Allocate(size); 
-    }
+    //StaticAllocator(int size) 
+    //{ 
+    //    Allocate(size); 
+    //}
+    StaticAllocator(int size) = delete;
 
-    // Why is this constructor needed?
-    //StaticAllocator(DataType* data, int ID)
+    //StaticAllocator(DataType* data, int ld)
     //{
     //    assert(false);
     //}
-    StaticAllocator(DataType* data, int ID) = delete;
+    StaticAllocator(DataType* data, int ld) = delete;
 
-    void Allocate(int size) 
-    { 
-        assert(size <= N); 
-    }
+    void Swap(StaticAllocator& other) = delete;
 
-    void DeAllocate() {}
+    //void Allocate(int size) 
+    //{ 
+    //    assert(size <= N); 
+    //}
+    void Allocate(int size) = delete;
 
-    // Leading dimension
-    int GetLD(int ld) const { return ld; }
+    //void DeAllocate() {}
+    void DeAllocate() = delete;
+
+    // Get Leading Dimension
+    //int GetLD(int ld) const { return ld; }
 
     template<typename MatrixType>
     void InitMatCopy(const MatrixType& src, MatrixType& dest)
