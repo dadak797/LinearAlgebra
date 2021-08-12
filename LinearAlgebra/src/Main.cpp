@@ -7,6 +7,8 @@
 
 int main()
 {
+    Matrix matrix(3, 4);
+    Matrix matB(matrix);
 
     return 0;
 }

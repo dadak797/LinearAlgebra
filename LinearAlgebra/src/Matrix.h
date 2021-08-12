@@ -14,8 +14,8 @@ protected:
     MatrixDimension()
         : m_Row(0), m_Col(0) {}
 
-    MatrixDimension(int row, int col)
-        : m_Row(row), m_Col(col) {}
+    MatrixDimension(int nRow, int nCol)
+        : m_Row(nRow), m_Col(nCol) {}
 
     void Swap(MatrixDimension& matDim)
     {
@@ -23,30 +23,30 @@ protected:
         std::swap(m_Col, matDim.m_Row);
     }
 
-    bool Resize(int row, int col)
+    bool Resized(int nRow, int nCol)
     {
         bool flag = false;
         
-        if (m_Row != row)
+        if (m_Row != nRow)
         {
-            m_Row = row;
+            m_Row = nRow;
             flag = true;
         }
 
-        if (m_Col != col)
+        if (m_Col != nCol)
         {
-            m_Col = col;
+            m_Col = nCol;
             flag = true;
         }
 
         return flag;
     }
 
-    void CheckRange(int row, int col) const
+    void CheckRange(int nRow, int nCol) const
     {
         #ifdef _CHECK_RANGE
-          assert(m_Row > row);
-          assert(m_Col > col);
+          assert(m_Row > nRow);
+          assert(m_Col > nCol);
         #endif
     }
 
@@ -64,13 +64,11 @@ private:
     int m_LD;  // Leading Dimension
 
 protected:
-    //Shared2DAllocator()
-    //    : SharedAllocator() {}
-    Shared2DAllocator() = delete;
+    Shared2DAllocator()
+        : SharedAllocator() {}
 
-    //Shared2DAllocator(int size)
-    //    : SharedAllocator(size) {}
-    Shared2DAllocator(int size) = delete;
+    Shared2DAllocator(int size)
+        : SharedAllocator(size) {}
 
     Shared2DAllocator(DataType* data, int ld)
         : SharedAllocator(data), m_LD(ld) {}
@@ -95,18 +93,17 @@ protected:
     Static2DAllocator()
         : StaticAllocator() {}
 
-    //Static2DAllocator(int size)
-    //    : StaticAllocator(size) {}
-    Static2DAllocator(int size) = delete;
+    Static2DAllocator(int size)
+        : StaticAllocator(size) {}
 
-    //Static2DAllocator(DataType* data, int ld)
-    //    : StaticAllocator(data) {}
-    Static2DAllocator(DataType* data, int ld) = delete;
+    Static2DAllocator(DataType* data, int ld)
+        : StaticAllocator(data) {}
 
     //void Swap(Static2DAllocator& other)
     //{
     //    assert(false);
     //}
+    void Swap(Static2DAllocator& other) = delete;
 
     enum { DEFAULT_ROWS = NROW, DEFAULT_COLUMNS = NCOL };
 };
@@ -133,12 +130,11 @@ protected:
         : MatrixDimension(AllocatorType::DEFAULT_ROWS, AllocatorType::DEFAULT_COLUMNS)
         , AllocatorType() {}
 
-    CMatrixStorage(int row, int col)
-        : MatrixDimension(row, col), AllocatorType(Size()) {}
+    CMatrixStorage(int nRow, int nCol)
+        : MatrixDimension(nRow, nCol), AllocatorType(Size()) {}
 
-    //CMatrixStorage(DataType* data, int row, int col, int ld)
-    //    : MatrixDimension(row, col), AllocatorType(data, ld) {}
-    CMatrixStorage(DataType* data, int row, int col, int ld) = delete;
+    CMatrixStorage(DataType* data, int nRow, int nCol, int ld)
+        : MatrixDimension(nRow, nCol), AllocatorType(data, ld) {}
 
     void Swap(CMatrixStorage& other)
     {
@@ -146,48 +142,48 @@ protected:
         AllocatorType::Swap(other);
     }
 
-    const DataType& GetRef(int row, int col) const
+    const DataType& GetRef(int iRow, int iCol) const
     {
-        CheckRange(row, col);
-        return *AllocatorType::Data(row * GetLD() + col);
+        CheckRange(iRow, iCol);
+        return *AllocatorType::Data(iRow * GetLD() + iCol);
     }
 
-    DataType& GetRef(int row, int col)
+    DataType& GetRef(int iRow, int iCol)
     {
-        CheckRange(row, col);
-        return *AllocatorType::Data(row * GetLD() + col);
+        CheckRange(iRow, iCol);
+        return *AllocatorType::Data(iRow * GetLD() + iCol);
     }
 
-    const DataType* GetPtr(int row, int col) const
+    const DataType* GetPtr(int iRow, int iCol) const
     {
-        CheckRange(row, col);
-        return AllocatorType::Data(row * GetLD() + col);
+        CheckRange(iRow, iCol);
+        return AllocatorType::Data(iRow * GetLD() + iCol);
     }
 
-    DataType* GetPtr(int row, int col)
+    DataType* GetPtr(int iRow, int iCol)
     {
-        CheckRange(row, col);
-        return AllocatorType::Data(row * GetLD() + col);
+        CheckRange(iRow, iCol);
+        return AllocatorType::Data(iRow * GetLD() + iCol);
     }
 
-    Vector<SharedAllocator<DataType>> GetColumn(const Range& rowRange, int col) = delete;
-    //Vector<SharedAllocator<DataType>> GetColumn(const Range& rowRange, int col)
+    Vector<SharedAllocator<DataType>> GetColumn(const Range& nRowRange, int iCol) = delete;
+    //Vector<SharedAllocator<DataType>> GetColumn(const Range& nRowRange, int iCol)
     //{
     //    assert(false);
-    //    return GetRow(col, rowRange);
+    //    return GetRow(iCol, nRowRange);
     //}
 
     // Get Row Vector with Specific Range
     // GetRow(0, Range::All()): 0-th row
-    // GetRow(1, Range(0, 1)): 1-th row from column 0 to column 1
-    Vector<SharedAllocator<DataType>> GetRow(int row, const Range& colRange)
+    // GetRow(1, Range(0, 1)): 1-th row from iColumn 0 to column 1
+    Vector<SharedAllocator<DataType>> GetRow(int iRow, const Range& colRange)
     {
-        return Vector<SharedAllocator<typename AllocatorType::MemberType>>(GetPtr(row, colRange.First()), colRange.Count(ColSize() - 1));
+        return Vector<SharedAllocator<typename AllocatorType::MemberType>>(GetPtr(iRow, colRange.First()), colRange.Count(ColSize() - 1));
     }
 
 public:
-    const DataType* operator[](int row) const { return GetPtr(row, 0); }
-    DataType* operator[](int row) { return GetPtr(row, 0); }
+    const DataType* operator[](int iRow) const { return GetPtr(iRow, 0); }
+    DataType* operator[](int iRow) { return GetPtr(iRow, 0); }
 };
 
 
@@ -212,12 +208,11 @@ protected:
         : MatrixDimension(AllocatorType::DEFAULT_ROWS, AllocatorType::DEFAULT_COLUMNS)
         , AllocatorType() {}
 
-    FMatrixStorage(int row, int col)
-        : MatrixDimension(row, col), AllocatorType(Size()) {}
+    FMatrixStorage(int nRow, int nCol)
+        : MatrixDimension(nRow, nCol), AllocatorType(Size()) {}
 
-    //FMatrixStorage(DataType* data, int row, int col, int ld)
-    //    : MatrixDimension(row, col), AllocatorType(data, ld) {}
-    FMatrixStorage(DataType* data, int row, int col, int ld) = delete;
+    FMatrixStorage(DataType* data, int nRow, int nCol, int ld)
+        : MatrixDimension(nRow, nCol), AllocatorType(data, ld) {}
 
     void Swap(FMatrixStorage& other)
     {
@@ -225,40 +220,40 @@ protected:
         AllocatorType::Swap(other);
     }
 
-    const DataType& GetRef(int row, int col) const
+    const DataType& GetRef(int iRow, int iCol) const
     {
-        CheckRange(row, col);
-        return *AllocatorType::Data(row + GetLD() * col);
+        CheckRange(iRow, iCol);
+        return *AllocatorType::Data(iRow + GetLD() * iCol);
     }
 
-    DataType& GetRef(int row, int col)
+    DataType& GetRef(int iRow, int iCol)
     {
-        CheckRange(row, col);
-        return *AllocatorType::Data(row + GetLD() * col);
+        CheckRange(iRow, iCol);
+        return *AllocatorType::Data(iRow + GetLD() * iCol);
     }
 
-    const DataType* GetPtr(int row, int col) const
+    const DataType* GetPtr(int iRow, int iCol) const
     {
-        CheckRange(row, col);
-        return AllocatorType::Data(row + GetLD() * col);
+        CheckRange(iRow, iCol);
+        return AllocatorType::Data(iRow + GetLD() * iCol);
     }
 
-    DataType* GetPtr(int row, int col)
+    DataType* GetPtr(int iRow, int iCol)
     {
-        CheckRange(row, col);
-        return AllocatorType::Data(row + GetLD() * col);
+        CheckRange(iRow, iCol);
+        return AllocatorType::Data(iRow + GetLD() * iCol);
     }
 
-    Vector<SharedAllocator<DataType>> GetRow(int row, const Range& colRange) = delete;
-    //Vector<SharedAllocator<DataType>> GetRow(int row, const Range& colRange)
+    Vector<SharedAllocator<DataType>> GetRow(int iRow, const Range& colRange) = delete;
+    //Vector<SharedAllocator<DataType>> GetRow(int iRow, const Range& colRange)
     //{
     //    assert(false);
-    //    return GetColumn(colRange, row);
+    //    return GetColumn(colRange, iRow);
     //}
 
-    Vector<SharedAllocator<DataType>> GetColumn(const Range& rowRange, int col)
+    Vector<SharedAllocator<DataType>> GetColumn(const Range& rowRange, int iCol)
     {
-        return Vector<SharedAllocator<typename AllocatorType::MemberType>>(GetPtr(rowRange.First(), col), rowRange.Count(RowSize() - 1));
+        return Vector<SharedAllocator<typename AllocatorType::MemberType>>(GetPtr(rowRange.First(), iCol), rowRange.Count(RowSize() - 1));
     }
 };
 
@@ -305,6 +300,142 @@ private:
 public:
     using DataType = typename StorageType::DataType;
     using TNumType = typename StorageType::DataType;
+    using Allocator2DType = typename StorageType::Allocator2DType;
+    using SharedMatrixType = typename StorageType::SharedMatrixType;
+
+    Matrix()
+        : StorageType() {}
+
+    // Constructor for Dynamic and Static Allocator
+    Matrix(int nRow, int nCol)
+        : StorageType(nRow, nCol) {}
+
+    // Constructor for Shared2DAllocator Only
+    Matrix(const DataType* data, int nRow, int nCol, int ld)
+        : StorageType(const_cast<DataType*>(data), nRow, nCol, ld) {}
+
+    // Copy Constructor
+    Matrix(const Matrix& mat)
+        : StorageType(mat.RowSize(), mat.ColSize())
+    {
+        Allocator2DType::Allocate(mat.Size());
+        Allocator2DType::InitMatCopy(mat, *this);
+    }
+
+    template<typename AllocatorType>
+    Matrix(Vector<AllocatorType>& vec)
+        : StorageType(vec.Data(), vec.Size(), 1, vec.Size()) {}
+
+    // Destructor
+    ~Matrix() { Allocator2DType::DeAllocate(); }
+
+    void Resize(int nRow, int nCol)
+    {
+        if (MatrixDimension::Resized(nRow, nCol))
+        {
+            Allocator2DType::DeAllocate();
+            Allocator2DType::Allocate(MatrixDimension::Size());
+        }
+    }
+
+    void Reserve(int nRow, int nCol)
+    {
+        //if (MatrixDimension::RowSize() < nRow || nCol < nCol)
+        if (nRow * nCol > MatrixDimension::Size())
+        {
+            Resize(nRow, nCol);
+        }
+    }
+
+    void Swap(Matrix<StorageType>& mat)
+    {
+        StorageType::Swap(mat);
+    }
+
+    const DataType& operator()(int iRow, int iCol) const
+    {
+        return StorageType::GetRef(iRow, iCol);
+    }
+
+    DataType& operator()(int iRow, int iCol)
+    {
+        return StorageType::GetRef(iRow, iCol);
+    }
+
+    SharedMatrixType operator()(const Range& rowRange, const Range& colRange)
+    {
+        int nRow = rowRange.Count(MatrixDimension::RowSize() - 1);
+        int nCol = colRange.Count(MatrixDimension::ColSize() - 1);
+
+        return SharedMatrixType(const_cast<DataType*>(StorageType::GetPtr(rowRange.First(), colRange.First())), 
+            nRow, nCol, StorageType::GetLD());
+    }
+
+    Vector<SharedAllocator<DataType>> operator()(const Range& rowRange, int iCol)
+    {
+        return StorageType::GetColumn(rowRange, iCol);
+    }
+
+    Vector<SharedAllocator<DataType>> operator()(int iRow, const Range& colRange)
+    {
+        return StorageType::GetRow(iRow, colRange);
+    }
+
+    bool IsIdentity() const
+    {
+        int nRow = MatrixDimension::RowSize();
+        int nCol = MatrixDimension::ColSize();
+
+        if (nRow != nCol)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < nRow; i++)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                if (!IsZero(StorageType::GetRef(i, j))
+                {
+                    return false;
+                }
+            }
+
+            if (!IsEqual(StorageType::GetRef(i, j), 1.0))
+            {
+                return false;
+            }
+
+            for (int j = i + 1; j < n; j++)
+            {
+                if (!IsZero(StorageType::GetRef(i, j)))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    bool operator==(const DataType& value) const
+    {
+        int nRow = MatrixDimension::RowSize();
+        int nCol = MatrixDimension::ColSize();
+
+        for (int i = 0; i < nCol; i++)
+        {
+            for (int j = 0; j < nRow; j++)
+            {
+                if (!IsZero(StorageType::GetRef(j, i) - value))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 };
 
 template<typename StorageType>
@@ -315,8 +446,9 @@ void Matrix<StorageType>::CopyMat(const Matrix<StorageType1>& other)
     if (other.GetLD() == StorageType::GetLD() && StorageType::GetLD() == StorageType::RowSize())
     {
         int size = StorageType::RowSize() * StorageType::ColSize();
-        DataType* pDest = StorageType::Data();
         const DataType* pSrc = other.Data();
+        DataType* pDest = StorageType::Data();
+        
         for (int i = 0; i < size; i++)
         {
             pDest[i] = pSrc[i];
@@ -324,8 +456,8 @@ void Matrix<StorageType>::CopyMat(const Matrix<StorageType1>& other)
     }
     else 
     {
-        DataType* pDest = StorageType::Data();
         const DataType* pSrc = other.Data();
+        DataType* pDest = StorageType::Data();        
         int nRow = StorageType::RowSize();
         int nCol = StorageType::ColSize();
 

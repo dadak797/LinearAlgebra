@@ -83,11 +83,10 @@ private:
 protected:
     StaticAllocator() {}
 
-    //StaticAllocator(int size) 
-    //{ 
-    //    Allocate(size); 
-    //}
-    StaticAllocator(int size) = delete;
+    StaticAllocator(int size) 
+    { 
+        Allocate(size); 
+    }
 
     //StaticAllocator(DataType* data, int ld)
     //{
@@ -97,14 +96,12 @@ protected:
 
     void Swap(StaticAllocator& other) = delete;
 
-    //void Allocate(int size) 
-    //{ 
-    //    assert(size <= N); 
-    //}
-    void Allocate(int size) = delete;
+    void Allocate(int size) 
+    { 
+        assert(size <= N); 
+    }
 
-    //void DeAllocate() {}
-    void DeAllocate() = delete;
+    void DeAllocate() {}
 
     // Get Leading Dimension
     //int GetLD(int ld) const { return ld; }
