@@ -18,7 +18,7 @@ protected:
         : m_Data(nullptr) {}
 
     DynamicAllocator(int size) 
-    { 
+    {
         Allocate(size); 
     }
 

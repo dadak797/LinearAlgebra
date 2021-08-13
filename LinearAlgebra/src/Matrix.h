@@ -318,9 +318,10 @@ public:
     Matrix(const Matrix& mat)
         : StorageType(mat.RowSize(), mat.ColSize())
     {
-        Allocator2DType::Allocate(mat.Size());
+        //Allocator2DType::Allocate(mat.Size());
         Allocator2DType::InitMatCopy(mat, *this);
     }
+    //Matrix(const Matrix& mat) = delete;
 
     template<typename AllocatorType>
     Matrix(Vector<AllocatorType>& vec)
@@ -381,69 +382,59 @@ public:
         return StorageType::GetRow(iRow, colRange);
     }
 
-    bool IsIdentity() const
+    bool IsIdentity() const;
+
+    bool operator==(const DataType& value) const;
+
+    MatrixCommaAssignment<StorageType> operator=(const DataType& value)
     {
-        int nRow = MatrixDimension::RowSize();
-        int nCol = MatrixDimension::ColSize();
-
-        if (nRow != nCol)
+        if (MatrixDimension::Size() > 0)
         {
-            return false;
+            *StorageType::Data() = value;
         }
 
-        for (int i = 0; i < nRow; i++)
-        {
-            for (int j = 0; j < i; j++)
-            {
-                if (!IsZero(StorageType::GetRef(i, j))
-                {
-                    return false;
-                }
-            }
-
-            if (!IsEqual(StorageType::GetRef(i, j), 1.0))
-            {
-                return false;
-            }
-
-            for (int j = i + 1; j < n; j++)
-            {
-                if (!IsZero(StorageType::GetRef(i, j)))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return MatrixCommaAssignment<StorageType>(this, 1, value);
     }
 
-    bool operator==(const DataType& value) const
-    {
-        int nRow = MatrixDimension::RowSize();
-        int nCol = MatrixDimension::ColSize();
-
-        for (int i = 0; i < nCol; i++)
-        {
-            for (int j = 0; j < nRow; j++)
-            {
-                if (!IsZero(StorageType::GetRef(j, i) - value))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
+    Matrix& operator=(const Matrix& other);
 };
 
 template<typename StorageType>
 template<typename StorageType1>
 void Matrix<StorageType>::CopyMat(const Matrix<StorageType1>& other)
 {
-    // Valid for FMatrixStorage only
-    if (other.GetLD() == StorageType::GetLD() && StorageType::GetLD() == StorageType::RowSize())
+    // Valid for FMatrixStorage
+    //if (other.GetLD() == StorageType::GetLD() && StorageType::GetLD() == StorageType::RowSize())
+    //{
+    //    int size = StorageType::RowSize() * StorageType::ColSize();
+    //    const DataType* pSrc = other.Data();
+    //    DataType* pDest = StorageType::Data();
+    //    
+    //    for (int i = 0; i < size; i++)
+    //    {
+    //        pDest[i] = pSrc[i];
+    //    }
+    //}
+    //else 
+    //{
+    //    const DataType* pSrc = other.Data();
+    //    DataType* pDest = StorageType::Data();        
+    //    int nRow = StorageType::RowSize();
+    //    int nCol = StorageType::ColSize();
+
+    //    for (int i = 0; i < nCol; i++) 
+    //    {
+    //        for (int j = 0; j < nRow; j++)
+    //        {
+    //            pDest[j] = pSrc[j];
+    //        }
+    //        pDest += StorageType::GetLD();
+    //        pSrc += other.GetLD();
+    //    }
+    //}
+
+    // Valid for CMatrixStorage
+    if (other.GetLD() == StorageType::GetLD() && StorageType::GetLD() == StorageType::ColSize())
     {
         int size = StorageType::RowSize() * StorageType::ColSize();
         const DataType* pSrc = other.Data();
@@ -461,9 +452,9 @@ void Matrix<StorageType>::CopyMat(const Matrix<StorageType1>& other)
         int nRow = StorageType::RowSize();
         int nCol = StorageType::ColSize();
 
-        for (int i = 0; i < nCol; i++) 
+        for (int i = 0; i < nRow; i++) 
         {
-            for (int j = 0; j < nRow; j++)
+            for (int j = 0; j < nCol; j++)
             {
                 pDest[j] = pSrc[j];
             }
@@ -473,6 +464,71 @@ void Matrix<StorageType>::CopyMat(const Matrix<StorageType1>& other)
     }
 }
 
+template<typename StorageType>
+bool Matrix<StorageType>::IsIdentity() const
+{
+    int nRow = MatrixDimension::RowSize();
+    int nCol = MatrixDimension::ColSize();
+
+    if (nRow != nCol)
+    {
+        return false;
+    }
+
+    for (int i = 0; i < nRow; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            if (!IsZero(StorageType::GetRef(i, j)))
+            {
+                return false;
+            }
+        }
+
+        if (!IsEqual(StorageType::GetRef(i, i), 1.0))
+        {
+            return false;
+        }
+
+        for (int j = i + 1; j < nRow; j++)
+        {
+            if (!IsZero(StorageType::GetRef(i, j)))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+template<typename StorageType>
+bool Matrix<StorageType>::operator==(const DataType& value) const
+{
+    int nRow = MatrixDimension::RowSize();
+    int nCol = MatrixDimension::ColSize();
+
+    for (int i = 0; i < nCol; i++)
+    {
+        for (int j = 0; j < nRow; j++)
+        {
+            if (!IsZero(StorageType::GetRef(j, i) - value))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+template <typename StorageType>
+inline Matrix<StorageType>& Matrix<StorageType>::operator=(const Matrix<StorageType>& mat)
+{
+    Resize(mat.RowSize(), mat.ColSize());
+    CopyMat(mat);
+    return *this;
+}
 
 
 //==============//
